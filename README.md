@@ -157,6 +157,8 @@ Lifecycle: **assess → capture → apply → verify → (undo) restore → veri
 ## Limitations and accuracy notes
 
 - **No NVIDIA Control Panel automation.** G-SYNC, power management and texture filtering are hardware/preference-dependent; they are deliberately excluded from the MVP instead of guessed.
+- **Hardware-accelerated GPU scheduling (HAGS)** is not in the MVP: it requires a reboot and specific driver support, so it is not guessed at.
+- **In-game VALORANT settings** (raw input buffer, graphics options) are not edited; the toolkit manages Windows-side configuration only.
 - **High performance plan may be missing.** Windows 11 Home often hides it. The card reports Unsupported; it does not create a scheme.
 - **Mouse acceleration can be bypassed** by games using raw input (VALORANT does). The change is still relevant to Windows pointer behavior; pointer speed (`MouseSensitivity`) is intentionally untouched.
 - **Game Mode defaults on.** Missing registry state is reported as the Windows default rather than "disabled".
