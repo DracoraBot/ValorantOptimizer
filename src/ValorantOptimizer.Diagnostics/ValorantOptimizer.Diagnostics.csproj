@@ -6,4 +6,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ValorantOptimizer.Core\ValorantOptimizer.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="ValorantOptimizer.Diagnostics.Tests" />
+  </ItemGroup>
 </Project>

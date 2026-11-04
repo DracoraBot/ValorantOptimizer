@@ -5,6 +5,9 @@ public sealed record ValorantInstallation
 {
     public string? ExecutablePath { get; init; }
 
+    /// <summary>The shipping game binary (VALORANT-Win64-Shipping.exe) when it can be located.</summary>
+    public string? ShippingExecutablePath { get; init; }
+
     public string? InstallDirectory { get; init; }
 
     public string? Version { get; init; }
