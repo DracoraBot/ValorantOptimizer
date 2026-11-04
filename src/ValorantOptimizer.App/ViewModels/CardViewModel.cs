@@ -187,6 +187,8 @@ public sealed class CardViewModel : ObservableObject
 
     public bool ShowUnavailable => State is OptimizationState.Unsupported or OptimizationState.ReviewRequired or OptimizationState.Unknown;
 
+    public bool IsUnavailable => State is OptimizationState.Unsupported or OptimizationState.ReviewRequired or OptimizationState.Unknown;
+
     public string UnavailableLabel => State switch
     {
         OptimizationState.ReviewRequired => "Needs review",

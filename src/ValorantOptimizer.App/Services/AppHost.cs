@@ -25,7 +25,7 @@ public sealed class AppHost
     {
         var paths = AppPaths.Default;
         var context = new OptimizationContext(new RegistryStore(), new ProcessRunner(), isElevated: false);
-        var modules = PreviewOptimizations.Create();
+        var modules = PreviewCatalog.Create();
         var backups = new PreviewBackupStore();
         var log = new PreviewActionLog();
         var engine = new OptimizationEngine(modules, backups, log, context);
@@ -33,6 +33,7 @@ public sealed class AppHost
         return new MainViewModel(
             new PreviewScanService(),
             new PreviewStartupAppScanner(),
+            new PreviewSystemMetricsProvider(),
             engine,
             log,
             paths,
@@ -48,7 +49,7 @@ public sealed class AppHost
         bool isElevated = IsAdministrator();
         var registry = new RegistryStore();
         var processes = new ProcessRunner();
-        var locator = new ValorantLocator(registry, processes);
+        var locator = new CachedValorantLocator(new ValorantLocator(registry, processes));
         var scanService = new ScanService(new SystemScanner(), locator);
         var startupScanner = new StartupAppScanner(registry);
         IReadOnlyList<IOptimization> modules = OptimizationCatalog.CreateDefault(locator);
@@ -62,6 +63,7 @@ public sealed class AppHost
         return new MainViewModel(
             scanService,
             startupScanner,
+            new SystemMetricsProvider(),
             engine,
             actionLog,
             paths,

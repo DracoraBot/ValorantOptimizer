@@ -364,8 +364,7 @@ internal sealed class PreviewScanService : IScanService
 }
 
 internal sealed class PreviewStartupAppScanner : IStartupAppScanner
-{
-    public Task<IReadOnlyList<StartupAppEntry>> ScanAsync(CancellationToken cancellationToken = default)
+{    public Task<IReadOnlyList<StartupAppEntry>> ScanAsync(CancellationToken cancellationToken = default)
     {
         IReadOnlyList<StartupAppEntry> entries =
         [
@@ -446,5 +445,36 @@ internal sealed class PreviewStartupAppScanner : IStartupAppScanner
         ];
 
         return Task.FromResult(entries);
+    }
+}
+
+internal sealed class PreviewSystemMetricsProvider : ISystemMetricsProvider
+{
+    private int _tick;
+
+    public Task<SystemMetrics> SampleAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        _tick++;
+
+        const ulong totalMemory = 32UL * 1024 * 1024 * 1024;
+        const ulong totalGpuMemory = 12UL * 1024 * 1024 * 1024;
+
+        double cpu = 24 + 9 * Math.Sin(_tick / 3.0);
+        double gpu = 61 + 8 * Math.Sin(_tick / 2.2);
+        double memory = 46 + 2.5 * Math.Sin(_tick / 5.0);
+        ulong usedMemory = (ulong)(totalMemory * memory / 100d);
+
+        return Task.FromResult(new SystemMetrics(
+            DateTimeOffset.Now,
+            cpu,
+            usedMemory,
+            totalMemory,
+            gpu,
+            64,
+            (ulong)(totalGpuMemory * 0.35),
+            totalGpuMemory,
+            "NVIDIA GeForce RTX 4070 SUPER",
+            null));
     }
 }

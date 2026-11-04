@@ -15,12 +15,44 @@ public static class OptimizationCatalog
 
         return
         [
+            // Mouse
             new MouseAccelerationOptimization(),
+            new MousePointerSpeedReview(),
+
+            // Windows
             new WindowsGameModeOptimization(),
             new GameBarCaptureOptimization(),
+            new WindowsBackgroundAppsOptimization(),
             new DeliveryOptimizationPeerOptimization(),
-            new ValorantGpuPreferenceOptimization(valorantLocator),
+
+            // CPU and power
+            new CpuPowerThrottlingOptimization(),
+            new CpuCoreParkingOptimization(),
+            new CpuSchedulingOptimization(),
             new PowerPlanHighPerformanceOptimization(),
+
+            // GPU
+            new HagsOptimization(),
+            new NvidiaSettingsReview(),
+
+            // Memory
+            new MemoryOverviewReview(),
+
+            // Network
+            new NetworkAdapterPowerOptimization(),
+            new NetworkOverviewReview(),
+
+            // USB
+            new UsbSelectiveSuspendOptimization(),
+            new UsbDevicePowerReview(),
+
+            // Storage
+            new StorageOverviewReview(),
+
+            // VALORANT
+            new ValorantGpuPreferenceOptimization(valorantLocator),
+            new ValorantAppCompatOptimization(valorantLocator),
+            new ValorantConfigReview(valorantLocator),
         ];
     }
 }

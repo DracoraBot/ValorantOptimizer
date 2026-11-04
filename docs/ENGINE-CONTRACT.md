@@ -53,9 +53,12 @@ original values round-trip exactly; never capture values by hand.
 
 - `Id`: lowercase ASCII letters/digits/`.`/`-`, 3–80 chars, stable forever. Example:
   `mouse-acceleration`, `delivery-optimization-peer`.
-- `Category`: `Mouse`, `Windows`, `CpuPower`, `Gpu`, `Valorant`, `Startup` (UI groups by this).
+- `Category`: `Mouse`, `Windows`, `CpuPower`, `Gpu`, `Memory`, `Network`, `Usb`, `Storage`,
+  `Valorant`, or `Startup` (shown as a label on the card; the sidebar is a single grid).
 - `Risk`: `Safe` (broadly safe, reversible), `Advanced` (system/policy-wide, confirm),
   `Experimental` (hardware/driver dependent; must explain risk).
+- Review-only modules return `ReviewRequired` or `Unsupported` from `AssessAsync`, never write,
+  and return a failure from Apply/Restore if something calls them anyway. The UI greys them out.
 - `RequiresElevation = true` if writes touch `HKLM` or run `powercfg /setactive`. The engine then
   routes apply/undo through the elevated helper; do not attempt to self-elevate.
 - `ManagedScopes` must list every registry location the module can write or restore. Undo data

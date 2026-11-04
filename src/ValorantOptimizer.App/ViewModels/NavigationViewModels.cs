@@ -10,6 +10,7 @@ namespace ValorantOptimizer.App.ViewModels;
 public enum NavPage
 {
     Optimizations,
+    Monitoring,
     Startup,
     History,
 }

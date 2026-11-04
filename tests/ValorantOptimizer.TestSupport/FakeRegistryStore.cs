@@ -60,7 +60,19 @@ public sealed class FakeRegistryStore : IRegistryStore
 
             foreach (string key in _keys)
             {
-                string normalized = key[(hive.ToString().Length + 1)..];
+                string hivePrefix = hive.ToString() + "|";
+                if (!key.StartsWith(hivePrefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                string normalized = key[hivePrefix.Length..];
+                int valueSeparator = normalized.IndexOf('|');
+                if (valueSeparator >= 0)
+                {
+                    normalized = normalized[..valueSeparator];
+                }
+
                 if (normalized.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                 {
                     string remainder = normalized[prefix.Length..];

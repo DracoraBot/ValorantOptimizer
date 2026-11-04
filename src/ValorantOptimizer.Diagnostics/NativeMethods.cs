@@ -96,9 +96,21 @@ internal static class NativeMethods
         public string DeviceKey;
     }
 
+    /// <summary>FILETIME: two DWORDs of 100-nanosecond intervals since 1601-01-01 UTC.</summary>
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct FileTime
+    {
+        public uint LowDateTime;
+        public uint HighDateTime;
+    }
+
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx buffer);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool GetSystemTimes(out FileTime idleTime, out FileTime kernelTime, out FileTime userTime);
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]

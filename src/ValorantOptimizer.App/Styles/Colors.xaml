@@ -47,6 +47,10 @@
     <Color x:Key="Color.Neutral">#8C96A8</Color>
     <Color x:Key="Color.Neutral.Soft">#1B202B</Color>
 
+    <!-- Category accents -->
+    <Color x:Key="Color.Category.Memory">#B38CFF</Color>
+    <Color x:Key="Color.Category.Memory.Soft">#221A33</Color>
+
     <!-- Brushes -->
     <SolidColorBrush x:Key="Bg.Window" Color="{StaticResource Color.Bg.Window}" />
     <SolidColorBrush x:Key="Bg.Sidebar" Color="{StaticResource Color.Bg.Sidebar}" />
@@ -85,6 +89,9 @@
     <SolidColorBrush x:Key="State.InfoSoft" Color="{StaticResource Color.Info.Soft}" />
     <SolidColorBrush x:Key="State.Neutral" Color="{StaticResource Color.Neutral}" />
     <SolidColorBrush x:Key="State.NeutralSoft" Color="{StaticResource Color.Neutral.Soft}" />
+
+    <SolidColorBrush x:Key="Category.Memory" Color="{StaticResource Color.Category.Memory}" />
+    <SolidColorBrush x:Key="Category.Memory.Soft" Color="{StaticResource Color.Category.Memory.Soft}" />
 
     <SolidColorBrush x:Key="Scrim" Color="#A6000000" />
     <SolidColorBrush x:Key="Transparent" Color="Transparent" />

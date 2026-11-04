@@ -96,6 +96,18 @@ public static class PresentationCatalog
         OptimizationCategory.Gpu => new CategoryPresentation(
             "GPU", IconCatalog.Category(OptimizationCategory.Gpu), "Accent.Default", "Accent.Soft",
             "Per-application graphics preferences."),
+        OptimizationCategory.Memory => new CategoryPresentation(
+            "Memory", IconCatalog.Category(OptimizationCategory.Memory), "Category.Memory", "Category.Memory.Soft",
+            "Memory configuration and background usage."),
+        OptimizationCategory.Network => new CategoryPresentation(
+            "Network", IconCatalog.Category(OptimizationCategory.Network), "State.Info", "State.InfoSoft",
+            "Adapter power, DNS and network diagnostics."),
+        OptimizationCategory.Usb => new CategoryPresentation(
+            "USB", IconCatalog.Category(OptimizationCategory.Usb), "State.Success", "State.SuccessSoft",
+            "Selective suspend and device power management."),
+        OptimizationCategory.Storage => new CategoryPresentation(
+            "Storage", IconCatalog.Category(OptimizationCategory.Storage), "State.Warning", "State.WarningSoft",
+            "Temporary files, storage health and background disk activity."),
         OptimizationCategory.Valorant => new CategoryPresentation(
             "VALORANT", IconCatalog.Category(OptimizationCategory.Valorant), "Accent.Default", "Accent.Soft",
             "Settings applied to the installed VALORANT client."),

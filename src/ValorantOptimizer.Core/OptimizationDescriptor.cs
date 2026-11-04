@@ -6,6 +6,10 @@ public enum OptimizationCategory
     Windows,
     CpuPower,
     Gpu,
+    Memory,
+    Network,
+    Usb,
+    Storage,
     Valorant,
     Startup,
 }

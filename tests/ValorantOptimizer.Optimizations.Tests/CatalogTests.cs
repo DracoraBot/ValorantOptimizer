@@ -17,20 +17,37 @@ public sealed class OptimizationCatalogTests
         OptimizationCatalog.CreateDefault(new EmptyLocator());
 
     [Fact]
-    public void Catalog_contains_the_six_mvp_modules_in_order()
+    public void Catalog_contains_all_expected_modules_in_catalog_order()
     {
         string[] ids = Catalog().Select(optimization => optimization.Descriptor.Id).ToArray();
 
         Assert.Equal(
             [
                 "mouse-acceleration",
+                "mouse-pointer-speed",
                 "windows-game-mode",
                 "game-bar-capture",
+                "windows-background-apps",
                 "delivery-optimization-peer",
-                "valorant-gpu-preference",
+                "cpu-power-throttling",
+                "cpu-core-parking",
+                "cpu-scheduling",
                 "power-plan-high-performance",
+                "gpu-hags",
+                "nvidia-settings",
+                "memory-overview",
+                "network-adapter-power",
+                "network-overview",
+                "usb-selective-suspend",
+                "usb-device-power",
+                "storage-overview",
+                "valorant-gpu-preference",
+                "valorant-appcompat",
+                "valorant-config",
             ],
             ids);
+        Assert.Equal(21, ids.Length);
+        Assert.Equal(ids.Length, ids.Distinct(StringComparer.Ordinal).Count());
     }
 
     [Fact]
@@ -60,7 +77,14 @@ public sealed class OptimizationCatalogTests
 
         Assert.True(byId["delivery-optimization-peer"].Descriptor.RequiresElevation);
         Assert.True(byId["power-plan-high-performance"].Descriptor.RequiresElevation);
+        Assert.True(byId["cpu-power-throttling"].Descriptor.RequiresElevation);
+        Assert.True(byId["cpu-core-parking"].Descriptor.RequiresElevation);
+        Assert.True(byId["cpu-scheduling"].Descriptor.RequiresElevation);
+        Assert.True(byId["gpu-hags"].Descriptor.RequiresElevation);
+        Assert.True(byId["network-adapter-power"].Descriptor.RequiresElevation);
+        Assert.True(byId["usb-selective-suspend"].Descriptor.RequiresElevation);
         Assert.False(byId["mouse-acceleration"].Descriptor.RequiresElevation);
+        Assert.False(byId["valorant-appcompat"].Descriptor.RequiresElevation);
     }
 
     [Fact]

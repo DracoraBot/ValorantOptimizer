@@ -77,6 +77,7 @@ public sealed class MainViewModel : ObservableObject
     public MainViewModel(
         IScanService scanService,
         IStartupAppScanner startupScanner,
+        ISystemMetricsProvider metricsProvider,
         OptimizationEngine engine,
         IActionLog actionLog,
         AppPaths paths,
@@ -90,6 +91,8 @@ public sealed class MainViewModel : ObservableObject
         _paths = paths ?? throw new ArgumentNullException(nameof(paths));
         _isElevated = isElevated;
         _isPreview = isPreview;
+        Monitoring = new MonitoringViewModel(
+            metricsProvider ?? throw new ArgumentNullException(nameof(metricsProvider)));
 
         Cards = [];
         CardsView = CollectionViewSource.GetDefaultView(Cards);
@@ -169,6 +172,8 @@ public sealed class MainViewModel : ObservableObject
 
     public ObservableCollection<NavItemViewModel> ToolNav { get; }
 
+    public MonitoringViewModel Monitoring { get; }
+
     public ToastViewModel Toast { get; }
 
     // --------------------------------------------------------------- commands
@@ -227,6 +232,8 @@ public sealed class MainViewModel : ObservableObject
 
     public bool IsHistoryPage => _currentPage == NavPage.History;
 
+    public bool IsMonitoringPage => _currentPage == NavPage.Monitoring;
+
     public NavPage CurrentPage
     {
         get => _currentPage;
@@ -237,6 +244,7 @@ public sealed class MainViewModel : ObservableObject
                 OnPropertyChanged(nameof(IsOptimizationPage));
                 OnPropertyChanged(nameof(IsStartupPage));
                 OnPropertyChanged(nameof(IsHistoryPage));
+                OnPropertyChanged(nameof(IsMonitoringPage));
             }
         }
     }
@@ -754,13 +762,19 @@ public sealed class MainViewModel : ObservableObject
 
     private void BuildNavigation()
     {
-        OverviewNav.Add(new NavItemViewModel("overview", "Overview", IconCatalog.Nav("overview"), NavPage.Optimizations, null, item => SelectNav(item)));
-        CategoryNav.Add(new NavItemViewModel("mouse", "Mouse", IconCatalog.Nav("mouse"), NavPage.Optimizations, [OptimizationCategory.Mouse], item => SelectNav(item)));
-        CategoryNav.Add(new NavItemViewModel("windows", "Windows", IconCatalog.Nav("windows"), NavPage.Optimizations, [OptimizationCategory.Windows], item => SelectNav(item)));
-        CategoryNav.Add(new NavItemViewModel("cpu", "CPU & power", IconCatalog.Nav("cpu"), NavPage.Optimizations, [OptimizationCategory.CpuPower], item => SelectNav(item)));
-        CategoryNav.Add(new NavItemViewModel("gpu", "GPU & VALORANT", IconCatalog.Nav("gpu"), NavPage.Optimizations, [OptimizationCategory.Gpu, OptimizationCategory.Valorant], item => SelectNav(item)));
-        ToolNav.Add(new NavItemViewModel("startup", "Startup apps", IconCatalog.Nav("startup"), NavPage.Startup, null, item => SelectNav(item)));
-        ToolNav.Add(new NavItemViewModel("history", "Action history", IconCatalog.Nav("history"), NavPage.History, null, item => SelectNav(item)));
+        OverviewNav.Add(new NavItemViewModel(
+            "optimizations", "Optimizations", IconCatalog.Nav("tweaks"),
+            NavPage.Optimizations, null, item => SelectNav(item)));
+
+        ToolNav.Add(new NavItemViewModel(
+            "monitoring", "Monitoring", IconCatalog.Nav("monitoring"),
+            NavPage.Monitoring, null, item => SelectNav(item)));
+        ToolNav.Add(new NavItemViewModel(
+            "startup", "Startup apps", IconCatalog.Nav("startup"),
+            NavPage.Startup, null, item => SelectNav(item)));
+        ToolNav.Add(new NavItemViewModel(
+            "history", "Action history", IconCatalog.Nav("history"),
+            NavPage.History, null, item => SelectNav(item)));
     }
 
     private void SelectNav(NavItemViewModel item, bool loadData = true)
@@ -775,9 +789,15 @@ public sealed class MainViewModel : ObservableObject
 
         if (item.Page == NavPage.Optimizations)
         {
-            PageTitle = item.Categories is null ? "Overview" : item.Title;
-            PageSubtitle = PresentationCatalog.CategoryDescription(item.Categories);
-            PageEyebrow = item.Categories is null ? "SETUP" : "OPTIMIZATION";
+            PageTitle = "Optimizations";
+            PageSubtitle = "Every available tweak in one grid. Unavailable items are greyed out; each toggle asks for confirmation first and can be undone.";
+            PageEyebrow = "OPTIMIZATION GRID";
+        }
+        else if (item.Page == NavPage.Monitoring)
+        {
+            PageTitle = "Monitoring";
+            PageSubtitle = "Live CPU, GPU, memory and NVIDIA sensor telemetry, sampled locally every second. Monitoring is read-only.";
+            PageEyebrow = "SYSTEM TELEMETRY";
         }
         else if (item.Page == NavPage.Startup)
         {
@@ -790,6 +810,15 @@ public sealed class MainViewModel : ObservableObject
             PageTitle = "Action history";
             PageSubtitle = "Every apply, verification and undo is written to a local, human-readable log.";
             PageEyebrow = "LOCAL AUDIT";
+        }
+
+        if (item.Page == NavPage.Monitoring)
+        {
+            Monitoring.Start();
+        }
+        else
+        {
+            Monitoring.Stop();
         }
 
         IsDetailOpen = false;
@@ -886,16 +915,8 @@ public sealed class MainViewModel : ObservableObject
     {
         OverviewNav[0].CountText = Cards.Count == 0 ? string.Empty : Cards.Count.ToString();
 
-        foreach (NavItemViewModel nav in CategoryNav)
-        {
-            int count = nav.Categories is null
-                ? 0
-                : Cards.Count(card => nav.Categories.Contains(card.Category));
-            nav.CountText = count == 0 ? string.Empty : count.ToString();
-        }
-
-        ToolNav[0].CountText = _startupLoaded && StartupApps.Count > 0 ? StartupApps.Count.ToString() : string.Empty;
-        ToolNav[1].CountText = _historyLoaded && HistoryEntries.Count > 0 ? HistoryEntries.Count.ToString() : string.Empty;
+        ToolNav[1].CountText = _startupLoaded && StartupApps.Count > 0 ? StartupApps.Count.ToString() : string.Empty;
+        ToolNav[2].CountText = _historyLoaded && HistoryEntries.Count > 0 ? HistoryEntries.Count.ToString() : string.Empty;
 
         OnPropertyChanged(nameof(AppliedCountLabel));
         RefreshSafeRecommendationState();

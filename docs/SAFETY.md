@@ -78,6 +78,28 @@ The toolkit never disables, stops, deletes or alters:
 No module may write outside its declared scopes. The Startup review screen is read-only and flags
 anti-cheat, GPU, audio and system entries rather than changing them.
 
+### 8. Review-only cards never write
+
+Seven cards are inspection surfaces rather than changes: pointer speed, NVIDIA driver settings,
+memory overview, network/DNS overview, USB device power, storage overview and VALORANT
+configuration. They return `ReviewRequired` (or `Unsupported` when absent), expose evidence, and
+return a failure if Apply/Restore is ever invoked. Their toggles are disabled and the cards are
+greyed out. No registry write, file write or process launch occurs during their assessment.
+
+### 9. Monitoring is read-only
+
+The Monitoring page samples CPU time (`GetSystemTimes`), memory (`GlobalMemoryStatusEx`) and, when
+available, NVIDIA utilization/temperature via a read-only `nvidia-smi` query. It launches no
+elevated process, changes nothing, and marks FPS, frame times and CPU temperature as unavailable
+rather than inferring values. See `SystemMetricsProvider` and `MonitoringViewModel`.
+
+### 10. New privileged modules follow the same engine
+
+CPU power throttling, CPU foreground scheduling, HAGS, core parking, USB selective suspend and
+network-adapter power are all handled by the same capture → backup → apply → verify → rollback
+engine. Each declares its exact registry/powercfg scope, requires explicit UAC approval through the
+helper, and reports reboot requirements. Review-only modules never appear in the Apply-safe batch.
+
 ### 7. Local and inspectable
 
 No telemetry, accounts, cloud calls or remote logging. The app writes only under the current
@@ -107,6 +129,8 @@ opened with the sidebar/history buttons.
   network "latency" recipes or anti-cheat workarounds.
 - No global graphics settings changes when a per-game setting is available.
 - No startup-app disabling in this version.
+- No FPS/frame-time overlay or CPU-temperature sensor integration. Those need a capture/sensor
+  service that is not bundled; the Monitoring page says so instead of estimating.
 - No automatic restore-point creation. Per-setting backups are the undo mechanism; the app avoids
   changes large enough to need a system restore point.
 - No FPS guarantees. Cards explain mechanisms and show exactly what they found.
@@ -136,3 +160,7 @@ Because UAC cannot be automated safely, verify on a test machine:
 4. Undo: confirm the original value returns and the backup file exists.
 5. Repeat and cancel UAC: nothing is written and no failure dialog blocks the UI.
 6. Check `logs\actions.jsonl` and `logs\elevated.log` for both attempts.
+7. Repeat for one power-plan-setting card (core parking or USB selective suspend): the original
+   AC value should be restored via `powercfg` and the log should show the exact commands.
+8. Check a review-only card (e.g. NVIDIA settings): its toggle must stay disabled, nothing should
+   be written, and the details should show the detected evidence.

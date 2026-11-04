@@ -234,13 +234,10 @@
                                       Margin="0,12,0,0"
                                       Focusable="False">
                             <StackPanel>
-                                <ItemsControl ItemsSource="{Binding OverviewNav}"
-                                              ItemTemplate="{StaticResource NavItemTemplate}"
-                                              Focusable="False" />
                                 <TextBlock Text="OPTIMIZATIONS"
                                            Style="{StaticResource Text.SectionLabel}"
-                                           Margin="22,20,0,8" />
-                                <ItemsControl ItemsSource="{Binding CategoryNav}"
+                                           Margin="22,8,0,8" />
+                                <ItemsControl ItemsSource="{Binding OverviewNav}"
                                               ItemTemplate="{StaticResource NavItemTemplate}"
                                               Focusable="False" />
                                 <TextBlock Text="TOOLKIT"
@@ -258,6 +255,7 @@
                 <!-- Active page -->
                 <Grid Grid.Column="1" Margin="28,22,28,0">
                     <views:OverviewView Visibility="{Binding IsOptimizationPage, Converter={StaticResource BoolToVisibility}}" />
+                    <views:MonitoringView Visibility="{Binding IsMonitoringPage, Converter={StaticResource BoolToVisibility}}" />
                     <views:StartupView Visibility="{Binding IsStartupPage, Converter={StaticResource BoolToVisibility}}" />
                     <views:HistoryView Visibility="{Binding IsHistoryPage, Converter={StaticResource BoolToVisibility}}" />
                 </Grid>
