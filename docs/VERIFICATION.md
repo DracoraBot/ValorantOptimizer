@@ -50,6 +50,7 @@ dataset (`--demo`, no real writes), and the live build was launched read-only:
 |---|---|
 | Live first launch + scan | Pass — real summary tiles and six assessments, no crash log |
 | Category navigation and state filters | Pass |
+| Card toggles (apply / undo) | Pass — toggle apply and restore flows confirmed; review/unsupported/no-backup toggles disabled with explanations |
 | Card details drawer | Pass — evidence, caveats, original-state note, managed locations |
 | Apply confirmation + acknowledgements | Pass — safe change applied, verified, toast shown |
 | Bulk "Apply safe recommendations" | Pass — 2 of 2 applied with one summary toast |

@@ -16,7 +16,7 @@ It is deliberately **not** a script collection or a one-click "FPS booster". Eve
 Reads Windows edition/build, CPU, GPU and driver version, installed RAM, primary display mode/refresh rate, elevation state, and the installed VALORANT client path — without administrator rights. The summary strip shows what the toolkit found; every card shows its own evidence.
 
 ### Modular optimization grid
-Cards are grouped by Mouse, Windows, CPU & power, and GPU & VALORANT. Each shows a risk label, current state, short explanation, restart/elevation requirements, and Apply/Undo actions. The details drawer adds:
+Cards are grouped by Mouse, Windows, CPU & power, and GPU & VALORANT in a uniform three-column grid. Each card shows a category icon, risk label, current state, short explanation and a toggle switch. Turning a toggle on opens the apply confirmation; turning a managed toggle off restores the captured backup. Toggles are disabled (with an explanatory tooltip) when Windows owns the state, a policy is in place, the optimization is unsupported, or no backup exists. The details drawer adds:
 
 - exactly what is written (registry paths and values),
 - why it might help (mechanism, no promised FPS numbers),

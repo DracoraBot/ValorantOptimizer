@@ -134,6 +134,7 @@ public sealed class MainViewModel : ObservableObject
         OpenLogFolderCommand = new RelayCommand(OpenLogFolder);
         RequestApplyCommand = new RelayCommand<CardViewModel>(RequestApply);
         RequestUndoCommand = new RelayCommand<CardViewModel>(RequestUndo);
+        ToggleCommand = new RelayCommand<CardViewModel>(ToggleOptimization);
         ShowDetailsCommand = new RelayCommand<CardViewModel>(ShowDetails);
         CloseDetailsCommand = new RelayCommand(() => IsDetailOpen = false);
         DismissToastCommand = Toast.DismissCommand;
@@ -177,6 +178,8 @@ public sealed class MainViewModel : ObservableObject
     public ICommand RequestApplyCommand { get; }
 
     public ICommand RequestUndoCommand { get; }
+
+    public ICommand ToggleCommand { get; }
 
     public ICommand ShowDetailsCommand { get; }
 
@@ -862,6 +865,23 @@ public sealed class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(EmptyMessage));
     }
 
+    /// <summary>
+    /// State changes only need a full view refresh when a filter/search is active. Skipping it in
+    /// the default view keeps card containers stable (less flicker and a stable accessibility tree).
+    /// </summary>
+    private void RefreshViewAfterStateChange()
+    {
+        if (_stateFilter != "all" || !string.IsNullOrWhiteSpace(SearchText))
+        {
+            RefreshView();
+            return;
+        }
+
+        OnPropertyChanged(nameof(HasNoVisibleCards));
+        OnPropertyChanged(nameof(ShowEmptyState));
+        OnPropertyChanged(nameof(EmptyMessage));
+    }
+
     private void RefreshNavigationCounts()
     {
         OverviewNav[0].CountText = Cards.Count == 0 ? string.Empty : Cards.Count.ToString();
@@ -902,7 +922,6 @@ public sealed class MainViewModel : ObservableObject
         {
             return;
         }
-
         _pendingConfirmation = () => ApplyCardAsync(card);
         ConfirmEyebrow = "APPLY OPTIMIZATION";
         ConfirmTitle = card.Name;
@@ -918,6 +937,54 @@ public sealed class MainViewModel : ObservableObject
         ConfirmAcknowledged = false;
         ConfirmIsBusy = false;
         IsConfirmOpen = true;
+    }
+
+    private void ToggleOptimization(CardViewModel card)
+    {
+        if (card.IsBusy)
+        {
+            return;
+        }
+
+        switch (card.State)
+        {
+            case OptimizationState.NotApplied:
+                RequestApply(card);
+                break;
+
+            case OptimizationState.Applied when card.HasBackup:
+                RequestUndo(card);
+                break;
+
+            case OptimizationState.Applied:
+                Toast.Show(
+                    ToastKind.Info,
+                    "Nothing to restore yet",
+                    "This setting is already in its recommended state. No backup was captured because the toolkit did not change it, so there is nothing to undo.");
+                break;
+
+            case OptimizationState.ReviewRequired:
+                Toast.Show(
+                    ToastKind.Info,
+                    "Needs review",
+                    string.IsNullOrWhiteSpace(card.BlockedReason)
+                        ? "This setting is controlled outside the toolkit."
+                        : card.BlockedReason);
+                break;
+
+            case OptimizationState.Unsupported:
+                Toast.Show(
+                    ToastKind.Info,
+                    "Not supported on this PC",
+                    string.IsNullOrWhiteSpace(card.BlockedReason)
+                        ? "The command is not available on this Windows configuration."
+                        : card.BlockedReason);
+                break;
+
+            default:
+                Toast.Show(ToastKind.Info, "State unknown", "Run a rescan before changing this optimization.");
+                break;
+        }
     }
 
     private void RequestUndo(CardViewModel card)
@@ -1027,7 +1094,7 @@ public sealed class MainViewModel : ObservableObject
         {
             card.SetBusy(false);
             RefreshNavigationCounts();
-            RefreshView();
+            RefreshViewAfterStateChange();
         }
     }
 
@@ -1050,7 +1117,7 @@ public sealed class MainViewModel : ObservableObject
         {
             card.SetBusy(false);
             RefreshNavigationCounts();
-            RefreshView();
+            RefreshViewAfterStateChange();
         }
     }
 
@@ -1114,7 +1181,7 @@ public sealed class MainViewModel : ObservableObject
 
         await LoadHistoryAsync();
         RefreshNavigationCounts();
-        RefreshView();
+        RefreshViewAfterStateChange();
     }
 
     private void ReportOutcome(OperationOutcome outcome, bool isUndo)

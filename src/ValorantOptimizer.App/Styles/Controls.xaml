@@ -75,9 +75,10 @@
         <Setter Property="Foreground" Value="{StaticResource Text.Primary}" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="14,8" />
+        <Setter Property="Padding" Value="12,6" />
+        <Setter Property="MinHeight" Value="32" />
         <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI" />
-        <Setter Property="FontSize" Value="12.5" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -90,7 +91,7 @@
         <Setter Property="Background" Value="{StaticResource Accent.Default}" />
         <Setter Property="BorderBrush" Value="{StaticResource Accent.Default}" />
         <Setter Property="Foreground" Value="{StaticResource Text.White}" />
-        <Setter Property="Padding" Value="16,9" />
+        <Setter Property="Padding" Value="14,6" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Accent.Hover}" />
@@ -107,7 +108,7 @@
         <Setter Property="Background" Value="{StaticResource Bg.SurfaceRaised}" />
         <Setter Property="BorderBrush" Value="{StaticResource Border.Default}" />
         <Setter Property="Foreground" Value="{StaticResource Text.Primary}" />
-        <Setter Property="Padding" Value="14,8" />
+        <Setter Property="Padding" Value="13,6" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Bg.SurfaceHover}" />
@@ -123,7 +124,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Foreground" Value="{StaticResource Text.Secondary}" />
-        <Setter Property="Padding" Value="12,7" />
+        <Setter Property="Padding" Value="10,5" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Bg.SurfaceHover}" />
@@ -139,7 +140,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{StaticResource Border.Strong}" />
         <Setter Property="Foreground" Value="{StaticResource Text.Primary}" />
-        <Setter Property="Padding" Value="13,7" />
+        <Setter Property="Padding" Value="11,6" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="{StaticResource Bg.SurfaceHover}" />
@@ -149,13 +150,69 @@
     </Style>
 
     <Style x:Key="Button.Icon" TargetType="{x:Type Button}" BasedOn="{StaticResource Button.Ghost}">
-        <Setter Property="Width" Value="32" />
-        <Setter Property="Height" Value="32" />
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="28" />
         <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="11" />
         <Setter Property="FontWeight" Value="Normal" />
+    </Style>
+
+    <!-- Card toggle switch: a button so the click can be confirmed before any state changes. -->
+    <Style x:Key="Button.Toggle" TargetType="{x:Type Button}">
+        <Setter Property="Width" Value="44" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="MinWidth" Value="44" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="Track"
+                            Width="44"
+                            Height="24"
+                            CornerRadius="12"
+                            Background="{StaticResource Bg.Input}"
+                            BorderBrush="{StaticResource Border.Strong}"
+                            BorderThickness="1"
+                            SnapsToDevicePixels="True">
+                        <Grid>
+                            <Ellipse x:Name="Thumb"
+                                     Width="16"
+                                     Height="16"
+                                     Fill="{StaticResource Text.Secondary}"
+                                     HorizontalAlignment="Left"
+                                     Margin="3,0,0,0" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsAppliedToggle}" Value="True">
+                            <Setter TargetName="Track" Property="Background" Value="{StaticResource Accent.Default}" />
+                            <Setter TargetName="Track" Property="BorderBrush" Value="{StaticResource Accent.Default}" />
+                            <Setter TargetName="Thumb" Property="Fill" Value="{StaticResource Text.White}" />
+                            <Setter TargetName="Thumb" Property="HorizontalAlignment" Value="Right" />
+                            <Setter TargetName="Thumb" Property="Margin" Value="0,0,3,0" />
+                        </DataTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Track" Property="Opacity" Value="0.9" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Track" Property="Opacity" Value="0.72" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Track" Property="Opacity" Value="0.35" />
+                            <Setter Property="Cursor" Value="Arrow" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <ControlTemplate x:Key="TitleBarButton.Template" TargetType="{x:Type Button}">
@@ -268,9 +325,10 @@
         <Setter Property="BorderBrush" Value="{StaticResource Border.Default}" />
         <Setter Property="Foreground" Value="{StaticResource Text.Secondary}" />
         <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI" />
-        <Setter Property="FontSize" Value="11.5" />
+        <Setter Property="FontSize" Value="11" />
         <Setter Property="FontWeight" Value="Medium" />
-        <Setter Property="Padding" Value="12,5" />
+        <Setter Property="Padding" Value="10,4" />
+        <Setter Property="MinHeight" Value="28" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
         <Setter Property="Template" Value="{StaticResource ChipButton.Template}" />

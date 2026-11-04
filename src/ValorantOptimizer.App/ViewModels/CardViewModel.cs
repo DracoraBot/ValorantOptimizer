@@ -198,6 +198,26 @@ public sealed class CardViewModel : ObservableObject
 
     public bool ShowBusy => IsBusy;
 
+    // ------------------------------------------------------------ toggle switch
+
+    public bool IsAppliedToggle => State == OptimizationState.Applied;
+
+    public bool IsToggleEnabled => !IsBusy &&
+        (State == OptimizationState.NotApplied ||
+         (State == OptimizationState.Applied && HasBackup));
+
+    public string ToggleTooltip => State switch
+    {
+        OptimizationState.NotApplied => IsBusy ? BusyText : $"Apply {Name}",
+        OptimizationState.Applied when HasBackup => IsBusy ? BusyText : "Restore the captured original settings",
+        OptimizationState.Applied => "This state comes from Windows or was changed outside the toolkit; no backup is available to undo.",
+        OptimizationState.ReviewRequired or OptimizationState.Unsupported =>
+            string.IsNullOrWhiteSpace(BlockedReason) ? "Not available on this PC." : BlockedReason,
+        _ => "The current state could not be determined.",
+    };
+
+    public string ToggleAutomationName => "Toggle " + Name;
+
     public void Update(OptimizationStatus status)
     {
         _status = status ?? throw new ArgumentNullException(nameof(status));
