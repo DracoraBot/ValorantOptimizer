@@ -65,6 +65,68 @@
                 </Grid>
             </Button>
         </DataTemplate>
+
+        <!-- Boot overlay motion: one settle technique, exits accelerate away. -->
+        <Storyboard x:Key="BootIntroStoryboard">
+            <DoubleAnimation Storyboard.TargetName="BootOverlay"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.12" FillBehavior="Stop" />
+
+            <DoubleAnimation Storyboard.TargetName="BootMarkScale"
+                             Storyboard.TargetProperty="ScaleX"
+                             From="0.9" To="1" Duration="0:0:0.38" FillBehavior="Stop">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="BootMarkScale"
+                             Storyboard.TargetProperty="ScaleY"
+                             From="0.9" To="1" Duration="0:0:0.38" FillBehavior="Stop">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+            <DoubleAnimation Storyboard.TargetName="BootMarkGroup"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.26" FillBehavior="Stop" />
+
+            <DoubleAnimation Storyboard.TargetName="BootWordmarkGroup"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" BeginTime="0:0:0.18" Duration="0:0:0.22" FillBehavior="Stop" />
+            <DoubleAnimation Storyboard.TargetName="BootWordmarkShift"
+                             Storyboard.TargetProperty="Y"
+                             From="8" To="0" BeginTime="0:0:0.18" Duration="0:0:0.30" FillBehavior="Stop">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+
+            <DoubleAnimation Storyboard.TargetName="BootProgressRail"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" BeginTime="0:0:0.30" Duration="0:0:0.20" FillBehavior="Stop" />
+            <DoubleAnimation Storyboard.TargetName="BootStatusText"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" BeginTime="0:0:0.42" Duration="0:0:0.20" FillBehavior="Stop" />
+        </Storyboard>
+
+        <Storyboard x:Key="BootProgressLoop">
+            <DoubleAnimation Storyboard.TargetName="BootProgressSweep"
+                             Storyboard.TargetProperty="X"
+                             From="-90" To="260"
+                             Duration="0:0:1.15"
+                             RepeatBehavior="Forever"
+                             FillBehavior="Stop" />
+        </Storyboard>
+
+        <Storyboard x:Key="BootExitStoryboard">
+            <DoubleAnimation Storyboard.TargetName="BootOverlay"
+                             Storyboard.TargetProperty="Opacity"
+                             From="1" To="0" Duration="0:0:0.25" FillBehavior="Stop">
+                <DoubleAnimation.EasingFunction>
+                    <CubicEase EasingMode="EaseIn" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
     </Window.Resources>
 
     <Border x:Name="WindowFrame"
@@ -265,6 +327,85 @@
             <views:DetailDrawer Grid.RowSpan="2" Panel.ZIndex="10" />
             <views:ConfirmDialog Grid.RowSpan="2" Panel.ZIndex="20" />
             <views:ToastView Grid.RowSpan="2" Panel.ZIndex="30" />
+
+            <!-- ================= Boot overlay ================= -->
+            <Grid x:Name="BootOverlay"
+                  Grid.RowSpan="2"
+                  Panel.ZIndex="40"
+                  Background="{StaticResource Bg.Window}"
+                  Visibility="Visible"
+                  UseLayoutRounding="True"
+                  SnapsToDevicePixels="True">
+
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <!-- Crosshair mark, matching the title bar and app icon. -->
+                    <Grid x:Name="BootMarkGroup"
+                          Width="96" Height="96"
+                          HorizontalAlignment="Center"
+                          RenderTransformOrigin="0.5,0.5">
+                        <Grid.RenderTransform>
+                            <ScaleTransform x:Name="BootMarkScale" ScaleX="1" ScaleY="1" />
+                        </Grid.RenderTransform>
+
+                        <Ellipse Width="70" Height="70"
+                                 Stroke="{StaticResource Accent.Default}"
+                                 StrokeThickness="4" />
+                        <Ellipse Width="9" Height="9"
+                                 Fill="{StaticResource Accent.Default}" />
+                        <Rectangle Width="4" Height="13"
+                                   Fill="{StaticResource Accent.Default}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Top" />
+                        <Rectangle Width="4" Height="13"
+                                   Fill="{StaticResource Accent.Default}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+                        <Rectangle Width="13" Height="4"
+                                   Fill="{StaticResource Accent.Default}"
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <Rectangle Width="13" Height="4"
+                                   Fill="{StaticResource Accent.Default}"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <StackPanel x:Name="BootWordmarkGroup"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                Margin="0,22,0,0">
+                        <StackPanel.RenderTransform>
+                            <TranslateTransform x:Name="BootWordmarkShift" X="0" Y="0" />
+                        </StackPanel.RenderTransform>
+                        <TextBlock Text="VALORANT"
+                                   FontSize="15" FontWeight="Bold"
+                                   Foreground="{StaticResource Text.Primary}" />
+                        <TextBlock Text="/"
+                                   FontSize="15" Margin="7,0"
+                                   Foreground="{StaticResource Text.Muted}" />
+                        <TextBlock Text="Optimization Toolkit"
+                                   FontSize="15"
+                                   Foreground="{StaticResource Text.Secondary}" />
+                    </StackPanel>
+
+                    <Border x:Name="BootProgressRail"
+                            Width="260" Height="3" Margin="0,26,0,0"
+                            Background="{StaticResource Bg.SurfaceRaised}"
+                            CornerRadius="1.5"
+                            ClipToBounds="True">
+                        <Border x:Name="BootProgressBar"
+                                Width="90" Height="3"
+                                HorizontalAlignment="Left"
+                                Background="{StaticResource Accent.Default}">
+                            <Border.RenderTransform>
+                                <TranslateTransform x:Name="BootProgressSweep" X="-90" />
+                            </Border.RenderTransform>
+                        </Border>
+                    </Border>
+
+                    <TextBlock x:Name="BootStatusText"
+                               Text="Preparing system scan"
+                               Style="{StaticResource Text.Caption}"
+                               HorizontalAlignment="Center"
+                               Margin="0,12,0,0" />
+                </StackPanel>
+            </Grid>
         </Grid>
     </Border>
 </Window>

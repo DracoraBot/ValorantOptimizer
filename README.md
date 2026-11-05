@@ -112,6 +112,17 @@ dotnet run --project src\ValorantOptimizer.App -- --smoke artifacts\scan-smoke.j
 
 The first launch only reads state. No change happens until you explicitly confirm an Apply action.
 
+The app shows a brief launch animation while the first scan runs. Preview runs skip it by default;
+add `--splash` to see it with synthetic data:
+
+```powershell
+dotnet run --project src\ValorantOptimizer.App -- --demo --splash
+```
+
+`--no-splash` skips it, and `VALORANT_OPTIMIZER_NO_ANIM=1` keeps the loading frame but disables the
+motion (the Windows animation setting is honored too). `VALORANT_OPTIMIZER_SPLASH_HOLD=<seconds>`
+freezes a frame so a screenshot can be taken deterministically.
+
 ## Publish
 
 ```powershell

@@ -67,6 +67,24 @@ Screenshots: `docs/images/overview.png`, `detail.png`, `confirm.png`, `startup.p
 `history.png`, `monitoring.png`. They use the preview dataset so no personal hardware details are
 published.
 
+## Launch animation
+
+The shell is covered by a boot overlay while the first scan runs. Only `Opacity` and render
+transforms are animated, so the scan never competes with a layout pass.
+
+| Case | Result |
+|---|---|
+| Live launch (real scan, about 4 s) | Pass — overlay visible through the scan, fades out when it finishes, no crash log entry |
+| `--demo --splash`, intro frozen at 0.34 s | Pass — mark, wordmark, progress rail and sweep all render as composed |
+| `--demo` without `--splash` | Pass — overlay collapsed before first paint, so UI Automation still finds `MainWindow` |
+| `VALORANT_OPTIMIZER_NO_ANIM=1` | Pass — static end frame plus a static progress segment, no motion |
+| `--smoke` | Pass — exit code 0, no window, unchanged |
+
+Reduced motion uses the same path through `SystemParameters.ClientAreaAnimation`.
+
+Frames: `artifacts/screenshots/boot-t034.png` (held intro), `boot-live-early.png` (live launch),
+`boot-after.png` (after the fade), `boot-reduced.png` (motion disabled).
+
 ## Published artifacts
 
 `tools\build.ps1 -CreateZip` produced:

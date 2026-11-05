@@ -22,6 +22,8 @@ public partial class App : Application
             string.Equals(argument, "--demo", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(argument, "--preview", StringComparison.OrdinalIgnoreCase));
 
+        bool showBootSequence = ShouldShowBootSequence(e.Args, demo);
+
         if (e.Args.Any(argument => string.Equals(argument, "--smoke", StringComparison.OrdinalIgnoreCase)))
         {
             await RunSmokeTestAsync(e.Args);
@@ -32,7 +34,11 @@ public partial class App : Application
         {
             var host = new AppHost();
             MainViewModel viewModel = host.CreateMainViewModel(demo);
-            var window = new MainWindow { DataContext = viewModel };
+            var window = new MainWindow
+            {
+                DataContext = viewModel,
+                ShowBootSequence = showBootSequence,
+            };
             MainWindow = window;
             window.Show();
         }
@@ -134,6 +140,28 @@ public partial class App : Application
             MessageBoxImage.Warning);
         e.Handled = true;
     }
+
+    /// <summary>
+    /// The boot overlay covers the shell while the first scan runs. Preview runs exist for
+    /// screenshots and UI automation, so they skip it unless <c>--splash</c> is passed.
+    /// </summary>
+    private static bool ShouldShowBootSequence(string[] args, bool demo)
+    {
+        if (HasFlag(args, "--no-splash"))
+        {
+            return false;
+        }
+
+        if (HasFlag(args, "--splash"))
+        {
+            return true;
+        }
+
+        return !demo;
+    }
+
+    private static bool HasFlag(string[] args, string flag) =>
+        args.Any(argument => string.Equals(argument, flag, StringComparison.OrdinalIgnoreCase));
 
     private static void LogCrash(string source, Exception? exception)
     {
